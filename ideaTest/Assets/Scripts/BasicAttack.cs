@@ -12,12 +12,11 @@ public class BasicAttack : MonoBehaviour {
 
 //Editable Values
 	public float attackVel;
-	public float attackMaxDistance;
 
 //Private Values
 	private GameObject attack;
-	private Vector3 initialPosition;
-	private float minDifference;
+	private float initAttackTimer;
+	private Transform currentAnchor;
 
 //Flags
 	private bool onAttack;
@@ -27,7 +26,7 @@ public class BasicAttack : MonoBehaviour {
 //---------------------------------------------------------------------------------------------------
 
 	void Start () {
-		minDifference = 9.0f;
+		currentAnchor = transform.Find ("AttackAnchor").transform;
 		onAttack = false;
 	}
 
@@ -36,48 +35,22 @@ public class BasicAttack : MonoBehaviour {
 //---------------------------------------------------------------------------------------------------
 
 	void Update () {
-		if (Input.GetMouseButtonDown (0)) {
+		if (Input.GetMouseButtonDown (0) && !onAttack) {
 			attack = InstantiateAttack();
-			initialPosition = attack.transform.position;
+			initAttackTimer = Time.time;
 			onAttack = true;
-			//StartCoroutine (PerformAttack (attack));
 		}
 
 		if (onAttack) {
-			Vector3 faceDir = attack.transform.forward;
-			//attack.transform.position = Vector3.Lerp(attack.transform.position,faceDir*2,0.5f * Time.deltaTime);
-			attack.transform.Translate (faceDir*attackVel*Time.deltaTime);
-			Debug.Log ("Max distance: " + initialPosition*attackMaxDistance);
-			Debug.Log ("Distance: " + Vector3.Distance(attack.transform.position, initialPosition*attackMaxDistance));
-			if (Vector3.Distance(attack.transform.position, initialPosition*attackMaxDistance) >= minDifference) {
+			if (Time.time >= initAttackTimer + attackVel) {
 				onAttack = false;
-				//Destroy (attack);
 			}
 		}
 	}
 
 	private GameObject InstantiateAttack(){
-		Vector3 spawnPos = GetComponentInChildren<SpawnAttackArea>().getSpawnPosition();
-		GameObject attack = (GameObject)Instantiate (basicAttackPrefab,spawnPos, Quaternion.identity);
+		GameObject attack = (GameObject)Instantiate (basicAttackPrefab,currentAnchor.position, currentAnchor.rotation);
 		attack.transform.SetParent (transform);
 		return attack;
-	}
-
-	private IEnumerator PerformAttack(GameObject attack){
-		yield return new WaitForSeconds(0.1f);
-		Vector3 faceDir = attack.transform.forward;
-		attack.transform.Translate (faceDir*2*Time.deltaTime);
-		//Destroy (attack);
-	}
-
-	private bool hasReachedMax(Vector3 initial, Vector3 max, int axis){
-		switch (axis) {
-		case 1:
-			break;
-		case 2:
-			break;
-		case 3:
-			break;
-		}
-	}
+	}	
 }

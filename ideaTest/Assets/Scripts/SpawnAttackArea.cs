@@ -2,19 +2,32 @@
 using System.Collections;
 
 public class SpawnAttackArea : MonoBehaviour {
-	
 
-	// Use this for initialization
+//---------------------------------------------------------------------------------------------------
+// Atributes
+//---------------------------------------------------------------------------------------------------
+
+//Editable Values
+	public float maxTime;
+
+//Private Values
+	private float initialTime;
+
+//---------------------------------------------------------------------------------------------------
+// Initialization
+//---------------------------------------------------------------------------------------------------
+
 	void Start () {
-
+		initialTime = Time.time;
 	}
-	
-	// Update is called once per frame
+
+//---------------------------------------------------------------------------------------------------
+// Behaviour
+//---------------------------------------------------------------------------------------------------
+
 	void Update () {
-	
-	}
-
-	public Vector3 getSpawnPosition(){
-		return transform.position;
+		if (Time.time >= initialTime + maxTime) {
+			Destroy(this.gameObject);
+		}
 	}
 }
